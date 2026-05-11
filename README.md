@@ -6,7 +6,7 @@ _If it doesn't work, please let me know... Or forever hold your piece._
 
 ## Blurb
 
-This librray is for WS28xx chips and LEDs. It has an advantage over most other WS28xx libraries in that it is very small (~250 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit library is over 4000 lines of code.
+This library is for WS28xx chips and LEDs. It has an advantage over most other WS28xx libraries in that it is very small (~250 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit library is over 4000 lines of code.
 
 However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is in C++, and C++ is not fast enough on old and slow MCUs.
 
