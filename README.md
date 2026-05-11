@@ -2,22 +2,21 @@
 
 ## PRELIMINARY
 
-_If it doesn't work, please let me know..._
+_If it doesn't work, please let me know... Or forever hold your piece._
 
 ## Blurb
 
-This library has an advantage over most other WS28xx libraries in that it is very small (~230 lines, including the comments), making it easy to understand and modify. In comparison, the official 
-Adafruit library is over 4000 lines of code.
+This librray is for WS28xx chips and LEDs. It has an advantage over most other WS28xx libraries in that it is very small (~250 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit library is over 4000 lines of code.
 
-However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is in C++, not assembly language. C++ is not fast enough on old and slow MCUs.
+However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is in C++, and C++ is not fast enough on old and slow MCUs.
 
-The fast digital I/O works only on STM32s. Use the OptimizedGPIO library if you want to modify this code for other MCUs.
+Currently, the fast digital I/O works only on STM32s. Use the OptimizedGPIO library if you want to modify this code for other MCUs. (An updated multi-platform version will be available soon.)
 
-A special version is available for ESP32s, which uses the ESP32's RMT (Remote Control Transceiver) feature, so it's all done by the hardware and no software delays are needed.
+A special version will soon be available for ESP32s, which uses the ESP32's RMT (Remote Control Transceiver) feature, so it's all done by the hardware and no software delays are needed.
 
-Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU frequncy in MHs, e.g 64 or 164.
+Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU freqeuncy in MHz, e.g 64 or 164.
 
-For different MCU speeds you must adjust the nop timing (the number of "nop" instructions) using an oscilloscope to view the pulse widths.
+For different MCU speeds you must adjust the NOP timing (the number of "NOP" instructions) using an oscilloscope to view the pulse widths.
 
 It has been tested on several 800KHz LED strips and matrices, and also on these 3D printer display boards with 3 x RGB LEDs driven by WS2811 chips:
 - BIGTREETECH MINI 12864 V2.0
