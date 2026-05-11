@@ -2,7 +2,7 @@
 
 ## PRELIMINARY
 
-_If it doesn't work, please let me know... Or forever hold your piece._
+_If it doesn't work, please let me know... or forever hold your piece._
 
 ## Blurb
 
@@ -55,4 +55,9 @@ https://www.mouser.com/pdfDocs/WS2812B-2020_V10_EN_181106150240761.pdf
 
 ESD Protection
 https://www.st.com/resource/en/application_note/an5612-esd-protection-of-stm32-mcus-and-mpus-stmicroelectronics.pdf
+
+
+## Joke of the Week
+
+What helps you get _into_ bed in the morning?
 
