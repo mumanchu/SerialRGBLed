@@ -1,6 +1,6 @@
 # SerialRGBLed
 
-## PRELIMINARY
+## *** PRELIMINARY ***
 
 _If it doesn't work, please let me know... or forever hold your piece._
 
@@ -8,7 +8,7 @@ _If it doesn't work, please let me know... or forever hold your piece._
 
 This library is for WS28xx chips and LEDs. It has an advantage over most other WS28xx libraries in that it is very small (~250 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit library is over 4000 lines of code.
 
-However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is in C++, and C++ is not fast enough on old and slow MCUs.
+However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is (mostly) in C++, and C++ is not fast enough on old and slow MCUs.
 
 Currently, the fast digital I/O works only on STM32s. Use the OptimizedGPIO library if you want to modify this code for other MCUs. (An updated multi-platform version will be available soon.)
 
@@ -40,7 +40,7 @@ The answer to that is YES, it is OK! I have never had a problem. The data sheet 
 
 If connecting to LEDs on a front panel or NEOPIXEL LEDs in a 3D printer etc. ensure the MCU output has good ESD protection! 
 
-If not, add a suitable TVS diode to GND. I damaged an unprotected MCU input because I was wearing a fleece. A fleece is a wearable Van der Graaf Generator. (For the same reason, never wear silk pyjamas while working with delicate electronic equipment.
+If not, add a suitable TVS diode to GND. I damaged an unprotected MCU input because I was wearing a fleece. A fleece is a wearable Van der Graaf Generator. For the same reason, never wear silk pyjamas while working with delicate electronic equipment.
 
 ## Data Sheets
 
