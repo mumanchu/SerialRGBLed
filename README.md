@@ -1,22 +1,24 @@
 # SerialRGBLed Library for WS2811 and WS2812 RGB LEDs
 
+Another library from _mumanchu_.
+
 ## *** PRELIMINARY ***
 
 _If it doesn't work, please let me know..._
 
-## Blurb
+## Description
 
 This library is for WS28xx chips and RGB LEDs. It has an advantage over most other WS28xx libraries in that it is very small (~260 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit library is over 4000 lines of code.
 
-However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is (mostly) in C++, and C++ is not fast enough on old and slow MCUs.
+However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is (mostly) in C++ it is not fast enough on old and slow MCUs.
 
-Currently, the fast digital I/O works only on STM32s. Use the OptimizedGPIO library if you want to modify this code for other MCUs. (An updated multi-platform version will be available soon.)
+Currently, the fast digital I/O works only on STM32s. Use the `OptimizedGPIO` library if you want to modify this code for other MCUs. (An updated multi-platform version will be available soon.)
 
 A special version will soon be available for ESP32s, which uses the ESP32's RMT (Remote Control Transceiver) feature, so it's all done by the hardware and no software delays are needed.
 
-Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU freqeuncy in MHz, e.g 64 or 164.
+Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU freqeuncy in MHz, e.g 64 or 164 etc.
 
-For different MCU speeds you must adjust the NOP timing (the number of "NOP" instructions) using an oscilloscope to view the pulse widths.
+For different MCU speeds you must adjust the NOP timing (the number of "NOP" instructions) using an oscilloscope on the data pin to view the pulse widths.
 
 It has been tested on several 800KHz LED strips and matrices, and also on these 3D printer display boards with 3 x RGB LEDs driven by WS2811 chips:
 - BIGTREETECH MINI 12864 V2.0
@@ -25,6 +27,34 @@ It has been tested on several 800KHz LED strips and matrices, and also on these 
 Each LED or chip model has slightly different timing, but the chosen timing (700ns/350ns) should work for most 800KHz devices. For 400KHz devices, just modify the code to double the delays.
 
 Complex color animations can use 'updateLeds(ulong* data)' with pointers to a sequence of ulong RGB (or GBR) arrays.
+
+## Installation and Use
+
+Copy the `SerialRGBLed.h` file into your Sketch directory and include it as shown below. Before the include file, declare the CPU's frequency with `#define MCU_FREQ_MHZ xx`. Not all frequencies have been tested (yet), so you may need to define a new one by timing the signals on the data pin with an oscilloscope. The example contains some code for this testing, which continuously outputs 0 or 1 bits so you can time the T0 and T1 periods.
+
+```cpp
+	// Define the CPU's MHz frequency here, must be >= 64MHz
+	#define MCU_FREQ_MHZ 72
+
+	#include "SerialRGBLed.h"
+	SerialRGBLed leds;
+```
+
+Then call `begin()` in `setup()`:
+
+```cpp
+	// set the data pin and number of LEDs
+	if (!leds.begin(LED_PIN, NLEDS)) {
+		Serial.println("leds.begin() failed, pin number or MCU_FREQ_MHZ?");
+		Serial.flush();
+		while (1) yield();
+	}
+```
+
+Control the LEDs from the `loop()` as indicated in the example.
+
+The LED data is first prepared in memory by calling `setLedColor()`. This always takes a 24-bit RGB color (0x00rrggbb), but it is converted for GBR LEDs according to the `begin(..., bool gbr)` parameter.
+Once all LED colors have been set, send the data to the LEDs with `updateLeds()`.
 
 
 ## Q. Can you drive WS2812 5V LEDs from a 3.3V MCU?
@@ -50,18 +80,12 @@ https://cdn-shop.adafruit.com/datasheets/WS2811.pdf
 **WS2812 LED** \
 https://cdn-shop.adafruit.com/datasheets/WS2812.pdf
 
-**WS2812B LED** \
-https://www.mouser.com/pdfDocs/WS2812B-2020_V10_EN_181106150240761.pdf
-
-**ESD Protection** \
-https://www.st.com/resource/en/application_note/an5612-esd-protection-of-stm32-mcus-and-mpus-stmicroelectronics.pdf
-
 
 # Revision History
 
 | Date       | Version  | Details |
 |:---------- |:---------|:----------- |
-| 2026.05.11 | 0.0.0	| Preliminary |
+| 2026.05.12 | 0.0.0	| Preliminary |
 
 <br/>
 
