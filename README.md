@@ -56,6 +56,12 @@ Control the LEDs from the `loop()` as indicated in the example.
 The LED data is first prepared in memory by calling `setLedColor()`. This always takes a 24-bit RGB color (0x00rrggbb), but it is converted for GBR LEDs according to the `begin(..., bool gbr)` parameter.
 Once all LED colors have been set, send the data to the LEDs with `updateLeds()`.
 
+This is the LED ring that the example code is driving:
+[!LED ring used by example code](https://github.com/mumanchu/mumanchu/blob/main/assets/SerialRGBLed/serial-rgb-led-example.jpg)
+
+And there's a quick video of the effect here:
+https://github.com/mumanchu/mumanchu/blob/main/assets/SerialRGBLed/serial-rgb-led-example.mp4
+
 
 ## Q. Can you drive WS2812 5V LEDs from a 3.3V MCU?
 
