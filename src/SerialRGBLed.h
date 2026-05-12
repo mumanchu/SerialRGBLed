@@ -2,8 +2,9 @@
 
 /////////////////////////////////////////////////////////////////////
 // RGB LED Driver for WS2811 driver chips or WS2812 LEDS
-// Copyright (C) mumanchu + muman.ch, 2026.05.11
+// Copyright (C) mumanchu + muman.ch, 2026.05.12
 // All rights reversed
+// see https://github.com/mumanchu/SerialRGBLed
 /*
 BLURB
 =====
@@ -88,6 +89,8 @@ https://www.st.com/resource/en/application_note/an5612-esd-protection-of-stm32-m
 
 */
 
+// '#define MCU_FREQ_MHZ' before '#include "SerialRGBLed.h"'
+// see below for which MCU frequencies are supported
 #ifndef MCU_FREQ_MHZ
 #error MCU_FREQ_MHZ not defined
 #endif
@@ -117,10 +120,6 @@ public:
 // Call this once from setup()
 bool SerialRGBLed::begin(uint dataPin, uint numberOfLeds, bool grb)
 {
-	// timing is for a 64MHz MCU, else you must change the nop delays
-	//if (F_CPU != 64000000)
-	//	return false;
-
 	port = digitalPinToPort(dataPin);
 	if (port == NULL)
 		return false;
@@ -176,6 +175,7 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 // instruction is reliable, depending only on the MCU clock speed.
 #define NOP10	"nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; "
 #define NOP5	"nop; nop; nop; nop; nop; "
+#define NOP2	"nop; nop; "
 
 // Define the number of NOP delays according to the MCU speed.
 // There is no #define for the MCU speed because it can be set
@@ -184,12 +184,12 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 // must to use a 'scope to measure it and adjust the NOP count
 // in steps of 10 or 5 NOPs.
 
-#if (MCU_FREQ_MHZ == 68)
-// 64Mhz STM32
-#define T0H		NOP10 NOP5
-#define T0L		NOP10 NOP10 NOP10 
-#define T1H		NOP10 NOP10 NOP10 NOP5
-#define T1L		NOP5
+#if (MCU_FREQ_MHZ == 64 || MCU_FREQ_MHZ == 72)
+// 64Mhz/72MHz STM32
+#define T0H		NOP10
+#define T0L		NOP10 NOP10 
+#define T1H		NOP10 NOP10 NOP2
+#define T1L		""
 
 //TODO add more MCU speeds here
 
@@ -252,6 +252,7 @@ void SerialRGBLed::updateLeds(const ulong* data)
 				__asm volatile (T0L);
 			else
 				__asm volatile (T1L);
+
 			// next bit
 			mask >>= 1;
 		}
