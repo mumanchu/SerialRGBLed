@@ -59,7 +59,7 @@ Once all LED colors have been set, send the data to the LEDs with `updateLeds()`
 This is the LED ring that the example code is driving: \
 ![LED ring used by example code](https://github.com/mumanchu/mumanchu/blob/main/assets/SerialRGBLed/serial-rgb-led-example.jpg)
 
-And there's a quick video of the effect here (but you can't watch it on github): \
+And there's a 3 second video of the effect here (but you can't watch it on github - you need to download it first): \
 https://github.com/mumanchu/mumanchu/blob/main/assets/SerialRGBLed/serial-rgb-led-example.mp4
 
 
