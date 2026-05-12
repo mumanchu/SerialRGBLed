@@ -68,9 +68,9 @@ The answer to that is YES, it is OK! I have never had a problem. The data sheet 
 
 ## NOTE! ESD PROTECTION
 
-If connecting to LEDs on a front panel or NEOPIXEL LEDs in a 3D printer etc. ensure the MCU output has good ESD protection! 
+If connecting to LEDs on a front panel or NEOPIXEL LEDs in a 3D printer etc. ensure the MCU output has good ESD protection! If not, add a suitable TVS diode to GND. 
 
-If not, add a suitable TVS diode to GND. I damaged an unprotected MCU input because I was wearing a fleece. A fleece is a wearable Van der Graaf Generator or Wimshurst machine. For the same reason, never wear silk pyjamas while working with delicate electronic equipment.
+I damaged an unprotected MCU input because I was wearing a fleece. A fleece is like a wearable Van der Graaf Generator or Wimshurst machine. For the same reason, never wear silk pyjamas (or a silk negligee) while working with delicate electronic equipment.
 
 ## Data Sheets
 
