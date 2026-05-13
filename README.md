@@ -14,11 +14,11 @@ However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is 
 
 Currently, the fast digital I/O works only on STM32s. Use the `OptimizedGPIO` library if you want to modify this code for other MCUs. (An updated multi-platform version will be available soon.)
 
-A special version will soon be available for ESP32s, which uses the ESP32's RMT (Remote Control Transceiver) feature, so it's all done by the hardware and no software delays are needed.
+For the fantaistic **ESP32** boards, there is a different include file called `SerialRGBLedESP32.h`. This contains the same `SerialRGMLed` class, but crafted for the ESP32. This has been tested on the XIAO ESP32 boards. (Note that with the ESP32, you can use `setCpuFrequencyMhz(mhz)` to change the CPU's clock frequency at run time. But you must do that BEFORE calling `leds.begin()`, and only 80/160/240MHz are supported.) 
 
-Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU freqeuncy in MHz, e.g 64 or 164 etc.
+Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU frequency in MHz, e.g 64 or 164 etc.
 
-For different MCU speeds you must adjust the NOP timing (the number of "NOP" instructions) using an oscilloscope on the data pin to view the pulse widths.
+For different MCU speeds, or other MCUs, you must adjust the NOP timing (the number of "NOP" instructions) using an oscilloscope on the data pin to view the pulse widths.
 
 It has been tested on several 800KHz LED strips and matrices, and also on these 3D printer display boards with 3 x RGB LEDs driven by WS2811 chips:
 - BIGTREETECH MINI 12864 V2.0
@@ -35,7 +35,6 @@ Copy the `SerialRGBLed.h` file into your Sketch directory and include it as show
 ```cpp
 	// Define the CPU's MHz frequency here, must be >= 64MHz
 	#define MCU_FREQ_MHZ 72
-
 	#include "SerialRGBLed.h"
 	SerialRGBLed leds;
 ```
