@@ -14,7 +14,7 @@ However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is 
 
 Currently, the fast digital I/O works only on STM32s. Use the `OptimizedGPIO` library if you want to modify this code for other MCUs. (An updated multi-platform version will be available soon.)
 
-For the fantaistic **ESP32** boards, there is a different include file called `SerialRGBLedESP32.h`. This contains the same `SerialRGMLed` class, but crafted for the ESP32. This has been tested on the XIAO ESP32 boards. (Note that with the ESP32, you can use `setCpuFrequencyMhz(mhz)` to change the CPU's clock frequency at run time. But you must do that BEFORE calling `leds.begin()`, and only 80/160/240MHz are supported.) 
+For the fantastic ESP32 boards, there is a different include file called `SerialRGBLedESP32.h`. This contains the same `SerialRGBLed` class, but crafted for the ESP32. This has been tested on the XIAO ESP32 boards. (Note that with the ESP32, you can use `setCpuFrequencyMhz(mhz)` to change the CPU's clock frequency at run time. But you must do that _before_ calling `begin()`, and only 80/160/240MHz are supported.) 
 
 Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU frequency in MHz, e.g 64 or 164 etc.
 
