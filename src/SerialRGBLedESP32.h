@@ -8,7 +8,7 @@
 // 
 // >>> THIS VERSION FOR ESP32 <<<
 
-// '#define MCU_FREQ_MHZ' before '#include "SerialRGBLed.h"'
+// '#define MCU_FREQ_MHZ' before '#include "SerialRGBLedESP32.h"'
 // see below for which MCU frequencies are supported
 // the ESP32 normally runs at 240MHz
 #ifndef MCU_FREQ_MHZ
