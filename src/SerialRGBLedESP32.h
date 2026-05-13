@@ -194,4 +194,7 @@ void SerialRGBLed::updateLeds(const ulong* data)
 	interrupts();
 }
 
-#endif	// #ifndef STM32_CORE_VERSION
+#endif	// #ifndef ESP32
+
+
+
