@@ -10,7 +10,7 @@ _If it doesn't work, please let me know..._
 
 This library is for WS28xx chips and RGB LEDs. It has an advantage over most other WS28xx libraries in that it is very small (~260 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit library is over 4000 lines of code.
 
-However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is (mostly) in C++ it is not fast enough on old and slow MCUs.
+However, it works only on fast STM32 MCUs, 64MHz or faster, because the code is (mostly) in C++ it is not fast enough on old and slow MCUs. It requires delays as short as 350ns (nanoseconds).
 
 Currently, the fast digital I/O works only on STM32s. Use the `OptimizedGPIO` library if you want to modify this code for other MCUs. (An updated multi-platform version will be available soon.)
 
