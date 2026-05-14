@@ -16,7 +16,7 @@ Currently, the fast digital I/O works only on STM32s. Use the `OptimizedGPIO` li
 
 For the fantastic ESP32 boards, there is a different include file called `SerialRGBLedESP32.h`. This contains the same `SerialRGBLed` class, but crafted for the ESP32. This has been tested on the XIAO ESP32 boards. (Note that with the ESP32, you can use `setCpuFrequencyMhz(mhz)` to change the CPU's clock frequency at run time. But you must do that _before_ calling `begin()`, and only 80/160/240MHz are supported.) 
 
-Software delays are used for the 700us/350us signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU frequency in MHz, e.g 64 or 164 etc.
+Software delays are used for the 700ns/350ns (nanosecond) signal timing. To select the timing you must `#define MCU_FREQ_MHZ xxx` with the correct MCU frequency in MHz, e.g 64 or 164 etc.
 
 For different MCU speeds, or other MCUs, you must adjust the NOP timing (the number of "NOP" instructions) using an oscilloscope on the data pin to view the pulse widths.
 
