@@ -115,7 +115,7 @@ https://cdn-shop.adafruit.com/datasheets/WS2812.pdf
 
 | Date       | Version  | Details |
 |:---------- |:---------|:----------- |
-| 2026.05.15 | 0.0.0	| Initial release |
+| 2026.05.15 | 1.0.0	| Initial release |
 
 <br/>
 
