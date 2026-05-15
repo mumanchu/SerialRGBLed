@@ -122,5 +122,5 @@ https://cdn-shop.adafruit.com/datasheets/WS2812.pdf
 
 ## Joke of the Week
 
-What helps you get _into_ bed in the morning?
+What makes you get _into_ bed in the morning?
 
