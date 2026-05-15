@@ -5,12 +5,14 @@ Another library from _mumanchu_.
 See the blog entry \
 https://muman.ch/muman/index.htm?muman-serial-rgb-leds.htm
 
+![57 Varieties](https://github.com/mumanchu/mumanchu/blob/main/assets/SerialRGBLed/57-varieties.jpg)
 
-## Description
 
-This library is for WS2812 RGB LEDs and WS2811 RGB LED driver chips. It has an advantage over most other WS28xx libraries in that it is very small (100 or 200 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit Neopixel library is over 4000 lines of code (but it probably does a lot more - if you need it).
+## Library Description
 
-For the ESP32, there are two versions of this library. One uses the **ESP32's 'Remote Control Transmitter' (RMT)** so all communications is done in the background by the hardware. The other version 'bit-bangs' the communications using software delays. For the STM32 there is only the bit-bang version, which runs on CPUs at 64MHz or faster. The bit-bang versions use `NOP` delays for the 700/350 nanosecond timing.
+This library is for WS2812 RGB LEDs and WS2811 RGB LED driver chips. It has an advantage over most other WS28xx libraries in that it is _very small_ (100 or 200 lines of code, including the comments), making it easy to understand and modify. In comparison, the official Adafruit Neopixel library is over 4000 lines of code (but it probably does more than you need).
+
+For the ESP32, there are two versions of this library. One uses the **ESP32's 'Remote Control Transmitter' (RMT)** so all communications is done in the background by the hardware - which is great! The other version 'bit-bangs' the communications using software delays. For the STM32 (no RMT) there is only the bit-bang version which runs on CPUs at 64MHz or faster. The bit-bang versions use `NOP` delays for the nanosecond timing.
  
 If you are using a single LED on an ESP32 board, you can use the existing `rgbLedWrite()` method that's part of the ESP32 HAL (Hardware Application Layer) in file '..\cores\esp32\esp32-hal-rgb-led.c'. This uses the ESP32's on-chip 'Remote Control Transmitter' (RMT) to generate the signals for the LED, with method `rmtWrite(...)`. The problem is it only works for one LED. You could use `rmtWriteRepeated()` to write the same colour to multiple LEDs - which is OK for single-colour 'NEOPIXEL' style displays. But what if you want to use the RMT for something else? Or you want a fancy colour animation?
 
@@ -21,8 +23,30 @@ There's a nice non-blocking method called `rmtWriteAsync()` which does not wait 
 For other MCUs, or to free up the RMT and/or use less RAM, you can use the bit-bang version, which controls the output using nanosecond delays tuned to your CPU's speed. This uses just 4 bytes per LED instead of 96. It needs a fast processor, 64MHz or faster, because slower processors can't do the nanosecond delays. The library provides bit-bang versions for ESP32 and STM32 processors.
 
 These LEDs are very bright. Each RGB colour has a one-byte brightness level of 0..255 (0x00..0xFF). At 0xFF it's too bright to look at, 0x0F is better if it's on the desk next to you. RGB values are 24-bits, usually stored as a 32-bit unsigned integer, 0x00rrggbb (0x00000000 .. 0x00FFFFFF). Some LEDs are GBR (not RGB). In this case call `begin()` with `grb = true`. Method parameters are always in the standard RGB format.
+
+## LED Signal Timing
+
+These LEDs need an 800KHz digital signal which has timed pulses to indicate '0' or '1' bits. '1' is high for 700ns (nanoseconds) and low for 350ns. '0' high for 350ns and low for 700ns. These timings are in nanoseconds, so they are very short. The LEDs have a data in pin (DI) and a data out pin (DO), so they can be chained together. You can connect the first DI pin directly to an output of your 3.3V or 5V microcontroller - see note about driving it with 3.3V below.
+
+Below is the timing for a '1' bit (T1) and a '0' bit (T0). T1H and T0L (T1 High and T0 Low) are 700..800ns. T1L and T0H (T1 Low and T0 High) are 350..400nS. The specified timings vary a bit between different versions of the chip, but 700/350ns works well, and so does 800/400ns. The RMT example uses 800/400ns. Some chips will also run at 400KHz, so the delays are doubled and maybe you can use them with slower CPUs. (That's your homework.)
+
+The DI and DO pins of all LEDs are chained together, so the serial data is passed down the chain to each LED until there is a break in the data of at least 50us microseconds. After this break, the LEDs assume the data is ready and will display the colour values they have received.
+
+![Timing](https://github.com/mumanchu/mumanchu/blob/main/assets/SerialRGBLed/ws2812-timing.png)
+
+
+## LED 5V Power
+
+The LEDs need 5V DC at up to 60mA for each LED (20mA per colour), depending on the brightness. That's a worst case of 20A for a 5m LED array! So you will usually need a separate 5V power supply for the LEDs. If you have only one or two LEDs then you can use the MCU's 5V supply, which may come directly from the USB or may be passed though a regulator with current limitations, so check the data sheet. The DI data pin only takes a few microamps, so you don't need to worry about that.
+
+NEOPIXEL LEDs for 3D Printers often have an additional connector on the main board for an external 5V power supply.
+
+5V DC at 20 Amps... The best ones have a fan. Power Factor Correction (PFC) is not needed because it's not an inductive load, so cheap PSUs can be used.
+
+![5V PSU](https://github.com/mumanchu/mumanchu/blob/main/assets/SerialRGBLed/5v-20a-psu.jpg)
+
  
-## Installation and Usage
+## Library Installation and Usage
 
 The library can be installed from the Arduino IDE's Library Manager (to find it, type 'mumanchu' into the search field). Or it can be installed from the ZIP file using 'Sketch / Include Library \> Add ZIP Library...'. The ZIP file can be downloaded from github.
 
@@ -78,7 +102,7 @@ While working with these LEDs, I damaged an unprotected MCU output because I was
 
 ## Data Sheets
 
-These LEDs are manufactured by Worldsemi. Their website always seems to download the data sheet onto your computer instead of opening it in the browser. So the Adafruit versions are referenced here.
+These LEDs and driver chips are manufactured by Worldsemi. Their website always seems to download the data sheet onto your computer instead of opening it in the browser. So the Adafruit versions are referenced here.
 
 **WS2811 Driver Chip** \
 https://cdn-shop.adafruit.com/datasheets/WS2811.pdf
@@ -91,7 +115,7 @@ https://cdn-shop.adafruit.com/datasheets/WS2812.pdf
 
 | Date       | Version  | Details |
 |:---------- |:---------|:----------- |
-| 2026.05.15 | 0.0.0	| Preliminary |
+| 2026.05.15 | 0.0.0	| Initial release |
 
 <br/>
 
