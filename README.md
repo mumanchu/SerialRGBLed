@@ -10,7 +10,7 @@ https://muman.ch/muman/index.htm?muman-serial-rgb-leds.htm
 
 This library is for WS2812 RGB LEDs and WS2811 RGB LED driver chips. It has an advantage over most other WS28xx libraries in that it is very small (100 or 200 lines, including the comments), making it easy to understand and modify. In comparison, the official Adafruit Neopixel library is over 4000 lines of code (but it probably does a lot more - if you need it).
 
-For the ESP32, there are two versions of this library. One uses the **ESP32's 'Remote Control Transmitter' (RMT)** so all communications is done in the background by the hardware. The other version 'bit-bangs' the communications using software delays. For the STM32 there is only the bit-bang version, which runs CPUs at 64MHz or faster. The bit-bang versions use `NOP` delays for the 700/350 nanosecond timing.
+For the ESP32, there are two versions of this library. One uses the **ESP32's 'Remote Control Transmitter' (RMT)** so all communications is done in the background by the hardware. The other version 'bit-bangs' the communications using software delays. For the STM32 there is only the bit-bang version, which runs on CPUs at 64MHz or faster. The bit-bang versions use `NOP` delays for the 700/350 nanosecond timing.
  
 If you are using a single LED on an ESP32 board, you can use the existing `rgbLedWrite()` method that's part of the ESP32 HAL (Hardware Application Layer) in file '..\cores\esp32\esp32-hal-rgb-led.c'. This uses the ESP32's on-chip 'Remote Control Transmitter' (RMT) to generate the signals for the LED, with method `rmtWrite(...)`. The problem is it only works for one LED. You could use `rmtWriteRepeated()` to write the same colour to multiple LEDs - which is OK for single-colour 'NEOPIXEL' style displays. But what if you want to use the RMT for something else? Or you want a fancy colour animation?
 
@@ -18,9 +18,9 @@ If you need a multicoloured animation you can use an array of RMT control data. 
 
 There's a nice non-blocking method called `rmtWriteAsync()` which does not wait until it's all sent, so you can poll it - this is perfect. The RMT library has this feature. ESP32s have lots of RAM, so for ESP32 applications this is the best solution if you don't need the RMT for something else.
 
-For other MCUs, or to free up the RMT and/or use less RAM, you can use the bit-bang version, which controls the output using nanosecond delays tuned to your CPU's speed. This uses just 4 bytes per LED instead of 96. It needs a fast processor, 64MHz or faster, because slower processors can't do the nanosecond delays. The library provides bi-bang versions for ESP32 and STM32 processors.
+For other MCUs, or to free up the RMT and/or use less RAM, you can use the bit-bang version, which controls the output using nanosecond delays tuned to your CPU's speed. This uses just 4 bytes per LED instead of 96. It needs a fast processor, 64MHz or faster, because slower processors can't do the nanosecond delays. The library provides bit-bang versions for ESP32 and STM32 processors.
 
-These LEDs are very bright. Each RGB colour has a one-byte brightness level of 0..255 (0x00..0xFF). At 0xFF it's too bright to look at, 0x0F is better if it's on the desk next to you. RGB values are 24-bits, usually stored as a 32-bit unsigned integer, 0x00rrggbb (0x00000000 .. 0x00FFFFFF). Some LEDs are GBR (not RGB). In this case call `begin()` with `grb = true`. Method parameters are always the standard RGB format.
+These LEDs are very bright. Each RGB colour has a one-byte brightness level of 0..255 (0x00..0xFF). At 0xFF it's too bright to look at, 0x0F is better if it's on the desk next to you. RGB values are 24-bits, usually stored as a 32-bit unsigned integer, 0x00rrggbb (0x00000000 .. 0x00FFFFFF). Some LEDs are GBR (not RGB). In this case call `begin()` with `grb = true`. Method parameters are always in the standard RGB format.
  
 ## Installation and Usage
 
