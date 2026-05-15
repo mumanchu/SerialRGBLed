@@ -18,7 +18,7 @@ If you need a multicoloured animation you can use an array of RMT control data. 
 
 There's a nice non-blocking method called `rmtWriteAsync()` which does not wait until it's all sent, so you can poll it - this is perfect. The RMT library has this feature. ESP32s have lots of RAM, so for ESP32 applications this is the best solution if you don't need the RMT for something else.
 
-For other MCUs, or to free up the RMT and/or use less RAM, you can use the bit-bang version, which controls the output using nanosecond delays tuned to your CPU's speed. This uses just 4 bytes per LED instead of 96. It needs a fast processor, 64MHz or faster, because slower processors can't do the nanosecond delays. The library provides bit-bang versions for ESP32 and STM32 processors.
+For other MCUs, or to free up the RMT and/or use less RAM, you can use the bit-bang version, which controls the output using nanosecond delays tuned to your CPU's speed. This uses just 4 bytes per LED instead of 96. It needs a fast processor, 64MHz or faster, because slower processors can't do the nanosecond delays. The library provides bi-bang versions for ESP32 and STM32 processors.
 
 These LEDs are very bright. Each RGB colour has a one-byte brightness level of 0..255 (0x00..0xFF). At 0xFF it's too bright to look at, 0x0F is better if it's on the desk next to you. RGB values are 24-bits, usually stored as a 32-bit unsigned integer, 0x00rrggbb (0x00000000 .. 0x00FFFFFF). Some LEDs are GBR (not RGB). In this case call `begin()` with `grb = true`. Method parameters are always the standard RGB format.
  

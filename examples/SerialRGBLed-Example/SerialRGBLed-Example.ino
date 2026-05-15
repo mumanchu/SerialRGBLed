@@ -1,20 +1,17 @@
 /////////////////////////////////////////////////////////////////////
-// SerialRGBLed Example
+// SerialRGBLed Bit-bang Example for STM32
 // mumachu and muman.ch, 2026.05.12
 // 
 // The example shows three rotating colours on a 24-led circular matrix
 // see http://github/mumanchu/SerialRGBLed
 
-// Define the CPU's MHz frequency here, must be >= 64MHz
-#define MCU_FREQ_MHZ 72
-
-#include "C:\Users\matth\Documents\Visual Studio 2022\bigtreetech-skr-mini-e3\bigtreetech-skr-mini-e3\SerialRGBLed.h"
+// You may need to adapt MCU_FREQ_MHZ for your board's CPU speed
+#include "SerialRGBLed.h"
 SerialRGBLed leds;
 
 // Adapt the pins for your board, these are for a Nucleo-64 STM32
 #define LED_PIN		PA10	// Arduino pin D2
 #define NLEDS		24		// number of LEDs in the ring
-
 #define LED_BUILTIN	PA5		// Arduino pin D13
 
 void setup() 
@@ -28,7 +25,7 @@ void setup()
 
 	// set the data pin and number of LEDs
 	if (!leds.begin(LED_PIN, NLEDS)) {
-		Serial.println("leds.begin() failed, pin number or MCU_FREQ_MHZ?");
+		Serial.println("leds.begin() failed");
 		Serial.flush();
 		while (1) yield();
 	}
@@ -69,6 +66,7 @@ void loop()
 			nled1 = NLEDS - 1;
 		if (++nled2 == NLEDS)
 			nled2 = 0;
+		
 		leds.updateLeds();
 	}
 }

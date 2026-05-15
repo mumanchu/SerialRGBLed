@@ -2,61 +2,51 @@
 
 /////////////////////////////////////////////////////////////////////
 // RGB LED Driver for WS2811 driver chips or WS2812 LEDS
-// Copyright (C) mumanchu + muman.ch, 2026.05.14
+// Copyright (C) mumanchu + muman.ch, 2026.05.12
 // All rights reversed
 // https://github.com/mumanchu/SerialRGBLed
 // https://muman.ch/muman/index.htm?muman-serial-rgb-leds.htm
 // 
-// >>> BIT-BANG VERSION FOR ESP32 <<<
+// >>> BIT-BANG VERSION FOR STM32 <<<
 
-// The ESP32 normally runs at 240MHz (80 or 160 are also supported)
-#define MCU_FREQ_MHZ 240
+// '#define MCU_FREQ_MHZ xxx' before '#include "SerialRGBLedSTM32.h"'
+// see code below for which MCU frequencies are supported
+#ifndef MCU_FREQ_MHZ
+#error MCU_FREQ_MHZ not defined
+#endif
 
 // Create a single 24-bit RGB value from three separate R G B values
 #define RGB(r, g, b) \
 	(((ulong)(r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff))
 
-#ifndef ESP32
-#error This version of SerialRGBLed is only for the ESP32
+#ifndef STM32_CORE_VERSION
+#error This version of SerialRGBLed is only for the STM32
 #else
 
 class SerialRGBLed
 {
 	ulong* ledData = NULL;
 	uint numberOfLeds;
-	uint regBit;
-	uint ts_reg;
-	uint tc_reg;
+	GPIO_TypeDef* port;
+	uint bitMask;
 	bool grb;
 public:
 	bool begin(uint dataPin, uint numberOfLeds, bool grb = false);
+	void clearLedData();
 	void setLedColor(uint led, ulong rgb);
 	void updateLeds() { updateLeds(ledData); }
 	void updateLeds(const ulong* data);
-	void clearLedData();
 };
 
 // Call this once from setup()
 bool SerialRGBLed::begin(uint dataPin, uint numberOfLeds, bool grb)
 {
-	if (dataPin >= SOC_GPIO_PIN_COUNT)
+	port = digitalPinToPort(dataPin);
+	if (port == NULL)
 		return false;
+	bitMask = digitalPinToBitMask(dataPin);
 	pinMode(dataPin, OUTPUT);
 	digitalWrite(dataPin, 0);
-
-	if (dataPin < 32) {
-		regBit = 1 << dataPin;
-		ts_reg = GPIO_OUT_W1TS_REG;
-		tc_reg = GPIO_OUT_W1TC_REG;
-	}
-	// some don't have more than 32 pins
-	#ifdef GPIO_OUT1_W1TS_REG
-	else {
-		regBit = 1 << (dataPin - 32);
-		ts_reg = GPIO_OUT1_W1TS_REG;
-		tc_reg = GPIO_OUT1_W1TC_REG;
-	}
-	#endif
 
 	uint size = numberOfLeds * sizeof(ulong);
 	ledData = (ulong*)malloc(size);
@@ -105,7 +95,6 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 // Software 'nop' delays are used because the timing for a 'nop' 
 // instruction is reliable, depending only on the MCU clock speed.
 #define NOP10	"nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; "
-#define NOP50	NOP10 NOP10 NOP10 NOP10 NOP10
 #define NOP5	"nop; nop; nop; nop; nop; "
 #define NOP2	"nop; nop; "
 
@@ -113,27 +102,24 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 // There is no #define for the MCU speed because it can be set
 // at run time by the clock configuration on many modern MCUs.
 // The timing is not linear according to the MCU speed, so you 
-// must to use a 'scope to measure it and adjust the NOP count.
+// must to use a 'scope to measure it and adjust the NOP count
+// in steps of 10 or 5 NOPs.
 
-//TODO this is a lot of NOPs, maybe there's a better way...
+#if (MCU_FREQ_MHZ == 64 || MCU_FREQ_MHZ == 72)
+// 64Mhz/72MHz STM32
+#define T0H		NOP10
+#define T0L		NOP10 NOP10 
+#define T1H		NOP10 NOP10 NOP2
+#define T1L		""
 
-#if (MCU_FREQ_MHZ == 80)
-#define T0H		NOP10 NOP10 NOP2
-#define T0L		NOP50 
-#define T1H		NOP10 NOP10 NOP10 NOP10 NOP5
-#define T1L		NOP10 NOP5
+//TODO add more MCU speeds here
 
-#elif (MCU_FREQ_MHZ == 160)
-#define T0H		NOP50
-#define T0L		NOP50 NOP50 NOP5
-#define T1H		NOP50 NOP50
-#define T1L		NOP10 NOP10 NOP10 NOP10 NOP2
-
-#elif (MCU_FREQ_MHZ == 240)
-#define T0H		NOP50 NOP10 NOP10 NOP10
-#define T0L		NOP50 NOP50 NOP50 NOP10 NOP2
-#define T1H		NOP50 NOP50 NOP50 NOP5
-#define T1L		NOP50 NOP10 NOP10
+#elif (MCU_FREQ_MHZ == 168)
+// 168MHz STM32
+#define T0H		NOP10 NOP10 NOP10 NOP10 NOP10 NOP5
+#define T0L		NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP5
+#define T1H		NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10 NOP10
+#define T1L		NOP10 NOP10 NOP10 NOP10 NOP10 
 
 #else
 #error Undefined MCU_FREQ_MHZ value
@@ -154,6 +140,11 @@ void SerialRGBLed::updateLeds(const ulong* data)
 	// disable interrupts, interrupts mess up the software timing
 	noInterrupts();
 
+	// for fast digital outputs
+	ulong odr = port->ODR;
+	ulong odr0 = odr & ~bitMask;
+	ulong odr1 = odr | bitMask;
+
 	// send data to all LEDs
 	// led data is 24 bits per led : 0x00rrggbb 
 	// (or may be 0x00ggrrbb for other hardware)
@@ -161,15 +152,14 @@ void SerialRGBLed::updateLeds(const ulong* data)
 		ulong color = data[led];
 
 		// send MS bit first
-		ulong bitMask = 1UL << 23;
+		ulong mask = 1UL << 23;
 
 		// send 24 bits
-		while(bitMask) {
-
+		while(mask) {
 			// output high
-			REG_WRITE(ts_reg, regBit);
+			port->ODR = odr1;
 			// 0 or 1 bit?
-			bool b = (color & bitMask) == 0;
+			bool b = (color & mask) == 0;
 			// delay according to the number of NOPs
 			if (b)
 				__asm volatile (T0H);
@@ -177,7 +167,7 @@ void SerialRGBLed::updateLeds(const ulong* data)
 				__asm volatile (T1H);
 
 			// output low
-			REG_WRITE(tc_reg, regBit);
+			port->ODR = odr0;
 			// delay according to the number of NOPs
 			if (b)
 				__asm volatile (T0L);
@@ -185,11 +175,10 @@ void SerialRGBLed::updateLeds(const ulong* data)
 				__asm volatile (T1L);
 
 			// next bit
-			bitMask >>= 1;
+			mask >>= 1;
 		}
 	}
 	interrupts();
 }
 
-#endif	// #ifndef ESP32
-
+#endif	// #ifndef STM32_CORE_VERSION
