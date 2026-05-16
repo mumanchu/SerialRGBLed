@@ -24,6 +24,12 @@ For other MCUs, or to free up the RMT and/or use less RAM, you can use the bit-b
 
 These LEDs are very bright. Each RGB colour has a one-byte brightness level of 0..255 (0x00..0xFF). At 0xFF it's too bright to look at, 0x0F is better if it's on the desk next to you. RGB values are 24-bits, usually stored as a 32-bit unsigned integer, 0x00rrggbb (0x00000000 .. 0x00FFFFFF). Some LEDs are GBR (not RGB). In this case call `begin()` with `grb = true`. Method parameters are always in the standard RGB format.
 
+> [!TIP]
+> For a single on-board RGB LED on an ESP32, you do not need this library. Just use the existing `rgbLedWrite()` method which uses the RMT:
+> ```cpp
+> void rgbLedWrite(uint8_t pin, uint8_t red_val, uint8_t green_val, uint8_t blue_val);
+> ```
+
 ## LED Signal Timing
 
 These LEDs need an 800KHz digital signal which has timed pulses to indicate '0' or '1' bits. '1' is high for 700ns (nanoseconds) and low for 350ns. '0' high for 350ns and low for 700ns. These timings are in nanoseconds, so they are very short. The LEDs have a data in pin (DI) and a data out pin (DO), so they can be chained together. You can connect the first DI pin directly to an output of your 3.3V or 5V microcontroller - see note about driving it with 3.3V below.
