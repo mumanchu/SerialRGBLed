@@ -91,7 +91,7 @@ The max. current into the LED's DIN pin is +-1 _microamp_, which is tiny. This m
 
 Will a 3.3V output be enough to drive the LED's DIN input which needs >= 3.5V?
 
-The answer to that is YES, it is OK! I have never had a problem. The data sheet shows an absolute worst-case minimum switching voltage, which never occurs in reality (unless it's duff chip). I'm pretty sure they would not develop a product that could not be driven by a 3.3V MCU.
+The answer to that is YES, it is OK! I have never had a problem. The data sheet shows an absolute worst-case minimum switching voltage, which never occurs in reality (unless it's a duff chip). I'm pretty sure they would not develop a product that could not be driven by a 3.3V MCU.
 
 ## Tip! ESD Protection
 
