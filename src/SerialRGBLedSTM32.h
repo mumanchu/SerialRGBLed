@@ -2,7 +2,7 @@
 
 /////////////////////////////////////////////////////////////////////
 // RGB LED Driver for WS2811 driver chips or WS2812 LEDS
-// Copyright (C) mumanchu + muman.ch, 2026.05.12
+// Copyright (C) mumanchu + muman.ch, 2026.06.21
 // All rights reversed
 // https://github.com/mumanchu/SerialRGBLed
 // https://muman.ch/muman/index.htm?muman-serial-rgb-leds.htm
@@ -107,9 +107,9 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 
 #if (MCU_FREQ_MHZ == 64 || MCU_FREQ_MHZ == 72)
 // 64Mhz/72MHz STM32
-#define T0H		NOP10
-#define T0L		NOP10 NOP10 
-#define T1H		NOP10 NOP10 NOP2
+#define T0H		NOP10 NOP5
+#define T0L		NOP10 NOP10 NOP10
+#define T1H		NOP10 NOP10 NOP10 NOP2
 #define T1L		""
 
 //TODO add more MCU speeds here
