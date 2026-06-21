@@ -25,6 +25,7 @@
 
 class SerialRGBLed
 {
+protected:
 	ulong* ledData = NULL;
 	uint numberOfLeds;
 	GPIO_TypeDef* port;
@@ -90,7 +91,6 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 // This defines the approximate timing used for 800kHz chips and LEDs:
 //    0 bit = 350ns high (T0H) + 700ns low (T0L)
 //    1 bit = 700ns high (T1H) + 350ns low (T1L)
-//    total = 1250ns, for 800kHz chip
 
 // Software 'nop' delays are used because the timing for a 'nop' 
 // instruction is reliable, depending only on the MCU clock speed.
@@ -102,8 +102,7 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 // There is no #define for the MCU speed because it can be set
 // at run time by the clock configuration on many modern MCUs.
 // The timing is not linear according to the MCU speed, so you 
-// must to use a 'scope to measure it and adjust the NOP count
-// in steps of 10 or 5 NOPs.
+// must to use a 'scope to measure it and adjust the NOP count.
 
 #if (MCU_FREQ_MHZ == 64 || MCU_FREQ_MHZ == 72)
 // 64Mhz/72MHz STM32
