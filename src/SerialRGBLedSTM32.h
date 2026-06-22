@@ -1,16 +1,20 @@
 #pragma once
 
 /////////////////////////////////////////////////////////////////////
-// RGB LED Driver for WS2811 driver chips or WS2812 LEDS
-// Copyright (C) mumanchu + muman.ch, 2026.06.21
+// RGB LED Driver for WS2811 driver chips or WS2812/2813 LEDS
+// Copyright (C) mumanchu + muman.ch, 2026.06.22
 // All rights reversed
 // https://github.com/mumanchu/SerialRGBLed
 // https://muman.ch/muman/index.htm?muman-serial-rgb-leds.htm
-// 
-// >>> BIT-BANG VERSION FOR STM32 <<<
 
-// '#define MCU_FREQ_MHZ xxx' before '#include "SerialRGBLedSTM32.h"'
-// see code below for which MCU frequencies are supported
+// >>> BIT-BANG VERSION FOR STM32 <<<
+#ifndef STM32_CORE_VERSION
+#error This version of SerialRGBLed is only for the STM32
+#else
+
+// '#define MCU_FREQ_MHZ' before '#include "SerialRGBLed.h"'
+// see below for which MCU frequencies are supported
+// use the value of F_CPU, which may be a runtime variable (not a #define)
 #ifndef MCU_FREQ_MHZ
 #error MCU_FREQ_MHZ not defined
 #endif
@@ -18,10 +22,6 @@
 // Create a single 24-bit RGB value from three separate R G B values
 #define RGB(r, g, b) \
 	(((ulong)(r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff))
-
-#ifndef STM32_CORE_VERSION
-#error This version of SerialRGBLed is only for the STM32
-#else
 
 class SerialRGBLed
 {
@@ -46,8 +46,12 @@ bool SerialRGBLed::begin(uint dataPin, uint numberOfLeds, bool grb)
 	if (port == NULL)
 		return false;
 	bitMask = digitalPinToBitMask(dataPin);
+
 	pinMode(dataPin, OUTPUT);
 	digitalWrite(dataPin, 0);
+
+	this->numberOfLeds = numberOfLeds;
+	this->grb = grb;
 
 	uint size = numberOfLeds * sizeof(ulong);
 	ledData = (ulong*)malloc(size);
@@ -55,8 +59,10 @@ bool SerialRGBLed::begin(uint dataPin, uint numberOfLeds, bool grb)
 		return false;
 	clearLedData();
 
-	this->numberOfLeds = numberOfLeds;
-	this->grb = grb;
+	// optional "reset code" delay, low level time
+	// don't start writing to the LEDs too soon, they get confused
+	delayMicroseconds(250);
+
 	return true;
 }
 
@@ -102,7 +108,8 @@ void SerialRGBLed::setLedColor(uint led, ulong rgb)
 // There is no #define for the MCU speed because it can be set
 // at run time by the clock configuration on many modern MCUs.
 // The timing is not linear according to the MCU speed, so you 
-// must to use a 'scope to measure it and adjust the NOP count.
+// must to use a 'scope to measure it and adjust the NOP count
+// in steps of 10 or 5 NOPs.
 
 #if (MCU_FREQ_MHZ == 64 || MCU_FREQ_MHZ == 72)
 // 64Mhz/72MHz STM32
@@ -158,9 +165,9 @@ void SerialRGBLed::updateLeds(const ulong* data)
 			// output high
 			port->ODR = odr1;
 			// 0 or 1 bit?
-			bool b = (color & mask) == 0;
+			bool b0 = (color & mask) == 0;
 			// delay according to the number of NOPs
-			if (b)
+			if (b0)
 				__asm volatile (T0H);
 			else
 				__asm volatile (T1H);
@@ -168,7 +175,7 @@ void SerialRGBLed::updateLeds(const ulong* data)
 			// output low
 			port->ODR = odr0;
 			// delay according to the number of NOPs
-			if (b)
+			if (b0)
 				__asm volatile (T0L);
 			else
 				__asm volatile (T1L);
