@@ -1,4 +1,4 @@
-# SerialRGBLed Library for WS2812 and WS2811 RGB LEDs
+# SerialRGBLed Library for WS2812/2813 and WS2811 RGB LEDs
 
 Another library from _mumanchu_.
 
@@ -10,7 +10,7 @@ https://muman.ch/muman/index.htm?muman-serial-rgb-leds.htm
 
 ## Library Description
 
-This library is for WS2812 RGB LEDs and WS2811 RGB LED driver chips. It has an advantage over most other WS28xx libraries in that it is _very small_ (100 or 200 lines of code, including the comments), making it easy to understand and modify. In comparison, the official Adafruit Neopixel library is over 4000 lines of code (and it probably does way more than you need).
+This library is for WS2812/WS2813 RGB LEDs and WS2811 RGB LED driver chips. It has an advantage over most other WS28xx libraries in that it is _very small_ (100 or 200 lines of code, including the comments), making it easy to understand and modify. In comparison, the official Adafruit Neopixel library is over 4000 lines of code (and it probably does way more than you need).
 
 For the ESP32, there are two versions of this library. One uses the **ESP32's 'Remote Control Transmitter' (RMT)** so all communications is done in the background by the hardware - which is great! The other version 'bit-bangs' the communications using software delays (as does the Adafruit library). For the STM32 (no RMT) there is only the bit-bang version which runs on CPUs at 64MHz or faster. The bit-bang versions use `NOP` delays for the nanosecond timing.
  
