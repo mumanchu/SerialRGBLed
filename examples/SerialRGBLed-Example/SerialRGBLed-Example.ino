@@ -1,18 +1,23 @@
 /////////////////////////////////////////////////////////////////////
-// SerialRGBLed Bit-bang Example for STM32
-// mumachu and muman.ch, 2026.05.12
+// SerialRGBLed Example for STM32
+// mumachu and muman.ch, 2026.06.22
 // 
 // The example shows three rotating colours on a 24-led circular matrix
-// see http://github/mumanchu/SerialRGBLed
+// https://github.com/mumanchu/SerialRGBLed
 
-// You may need to adapt MCU_FREQ_MHZ for your board's CPU speed
-#include "SerialRGBLed.h"
+// IMPORTANT!
+// Define the CPU's MHz frequency here, must be >= 64MHz
+// not all frequencies are supported (yet), see SerialRGBLed.h for details
+// use the value of F_CPU, which may be a runtime variable (not a #define)
+#define MCU_FREQ_MHZ 168
+
+#include "C:\Users\matth\Documents\Visual Studio 2022\bigtreetech-skr-mini-e3\bigtreetech-skr-mini-e3\SerialRGBLed.h"
 SerialRGBLed leds;
 
-// Adapt the pins for your board, these are for a Nucleo-64 STM32
 #define LED_PIN		PA10	// Arduino pin D2
 #define NLEDS		24		// number of LEDs in the ring
-#define LED_BUILTIN	PA5		// Arduino pin D13
+//#define LED_BUILTIN	PA5		// on Arduino it's pin 13
+
 
 void setup() 
 {
@@ -24,10 +29,11 @@ void setup()
 	pinMode(LED_BUILTIN, OUTPUT);
 
 	// set the data pin and number of LEDs
-	if (!leds.begin(LED_PIN, NLEDS)) {
-		Serial.println("leds.begin() failed");
+	if (!leds.begin(LED_PIN, NLEDS, true)) {
+		Serial.println("leds.begin() failed, pin number or MCU_FREQ_MHZ?");
 		Serial.flush();
-		while (1) yield();
+		while (1) 
+			yield();
 	}
 }
 
@@ -39,13 +45,24 @@ void loop()
 	if ((t - t1) >= 100) {
 		t1 = t;
 
-		// flash the onboard LED
 		digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+
+		#if 0
+		// use this code to measure the timing with an oscilloscope
+		for (int i = 0; i < NLEDS; ++i) {
+			leds.setLedColor(i, 0x00000000);	// all 0 bits, measure T0H and T0L
+			//leds.setLedColor(i, 0x00ffffff);	// all 1 bits, measure T1H and T1L
+		}
+		leds.updateLeds();
+
+		#else
 
 		// three rotating colours on a 24-led circular matrix
 		static int nled0 = 0;
 		static int nled1 = NLEDS / 4;
 		static int nled2 = NLEDS / 2;
+
+		// RGB 0x0f = not too bright
 		static ulong color0 = 0x000f0000;
 		static ulong color1 = 0x00000f00;
 		static ulong color2 = 0x0000000f;
@@ -66,7 +83,20 @@ void loop()
 			nled1 = NLEDS - 1;
 		if (++nled2 == NLEDS)
 			nled2 = 0;
-		
 		leds.updateLeds();
+		
+		/*
+		leds.clearLedData();
+		static ulong color = 0x00060000;
+		for (int i = 0; i < 10; ++i) {
+			leds.setLedColor(i, color);
+		}
+		color >>= 8;
+		if (color == 0)
+			color = 0x00060000;
+		leds.updateLeds();
+		*/
+
+		#endif
 	}
 }
