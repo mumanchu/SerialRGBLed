@@ -18,7 +18,6 @@ SerialRGBLed leds;
 #define NLEDS		24		// number of LEDs in the ring
 //#define LED_BUILTIN	PA5		// on Arduino it's pin 13
 
-
 void setup() 
 {
 	Serial.begin(115200);
@@ -84,18 +83,6 @@ void loop()
 		if (++nled2 == NLEDS)
 			nled2 = 0;
 		leds.updateLeds();
-		
-		/*
-		leds.clearLedData();
-		static ulong color = 0x00060000;
-		for (int i = 0; i < 10; ++i) {
-			leds.setLedColor(i, color);
-		}
-		color >>= 8;
-		if (color == 0)
-			color = 0x00060000;
-		leds.updateLeds();
-		*/
 
 		#endif
 	}
